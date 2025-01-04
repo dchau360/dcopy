@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# This script (dcopy) was created to make rclone copyto behave more like the cp command.
+# While cp -r /home/deric /home2/ would result in /home2/deric,
+# rclone copyto requires the full destination path (/home2/deric) to be specified.
+# This wrapper automates the process of appending the source directory's basename
+# to the destination, mimicking cp's behavior.
+
+if [ $# -ne 2 ]; then
+    echo "Usage: dcopy [sourcedir] [bucketdir]"
+    exit 1
+fi
+
+SOURCEDIR=$1
+BUCKETDIR=$2
+DESTINATIONDIR=$BUCKETDIR$(basename $SOURCEDIR)
+
+RCLONE_OPTS="-P --transfers 16 --checkers 16 --checksum --local-no-check-updated"
+
+# Perform the copy operation
+rclone $RCLONE_OPTS copyto "$SOURCEDIR" "$DESTINATIONDIR"
+
+# Verify the copy with check operation
+rclone $RCLONE_OPTS check "$SOURCEDIR" "$DESTINATIONDIR"
