@@ -7,18 +7,18 @@
 # to the destination, mimicking cp's behavior.
 
 if [ $# -ne 2 ]; then
-    echo "Usage: dcopy [sourcedir] [bucketdir]"
+    echo "Usage: dcopy [sourcedir] [destination_parent]"
     exit 1
 fi
 
 SOURCEDIR=$1
-BUCKETDIR=$2
-DESTINATIONDIR=$BUCKETDIR$(basename $SOURCEDIR)
+DESTINATIONPARENT=$2
+DESTINATION=$DESTINATIONPARENT$(basename $SOURCEDIR)
 
 RCLONE_OPTS="-P --transfers 16 --checkers 16 --checksum --local-no-check-updated"
 
 # Perform the copy operation
-rclone $RCLONE_OPTS copyto "$SOURCEDIR" "$DESTINATIONDIR"
+rclone $RCLONE_OPTS copyto "$SOURCEDIR" "$DESTINATION"
 
 # Verify the copy with check operation
-rclone $RCLONE_OPTS check "$SOURCEDIR" "$DESTINATIONDIR"
+rclone $RCLONE_OPTS check "$SOURCEDIR" "$DESTINATION"
